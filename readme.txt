@@ -15,6 +15,7 @@ Trang Home sẽ có filter theo tầm giá, lọc sản phẩm theo danh mục (
 P/s: nếu bấm confirm sẽ có một mã QR để khách hàng thanh toán
 Tick vào is_hot ở Product hay is_trending ở News trong CSDL admin sẽ có hiệu ứng nhấp nháy trên các sản phẩm/bài báo được tick
 Mỗi khi bạn thêm 1 bài báo mới, nó sẽ hiện ngay trên đầu ở widget Latest Post
+static\images\news_images chứa các bài báo trong CSDL mẫu
 
 // Giao diện Admin django
 ở Product, Order, ContactMessages sẽ có filter và search để dễ điều chỉnh
@@ -37,7 +38,8 @@ Orders: Show orders in the format "Order (x)" indicating which user placed the o
 P/S.: If "Confirm" is clicked, a QR code will be generated for customer payment.
 11. Tick is_hot in the Product model or is_trending in the News model in the admin database to show a flashing effect on the products/articles marked.
 Each time you add a new article, it will immediately appear at the top in the Latest Post widget.
- 
+12. static\images\news_images contains the sample database articles.
+
 //Django Admin Interface:
 In the Product, Order, and ContactMessages sections, there will be filters and search functionalities for easy adjustments.
 Click on the black text in the first column values of the classes to edit and update values.
