@@ -1,0 +1,18 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <img src="{% static 'app/images/news.gif' %}" class="card-img-top" alt="Sample Image">
+                <div class="card-body">
+                    <h5 class="card-title">Sample Title</h5>
+                    <p class="card-text">Sample content for news item.</p>
+                    <p class="card-text"><small class="text-muted">By Sample Author on Sample Date</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

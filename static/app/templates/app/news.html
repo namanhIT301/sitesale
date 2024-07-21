@@ -1,0 +1,25 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block news %}
+<div class="container">
+    <img src="{% static 'app/images/news.gif' %}" alt="News" class="news-gif">
+    <div class="row">
+        {% for news_item in news_list %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <a href="{% url 'news_detail' news_item.pk %}" class="text-decoration-none text-dark">
+                    {% if news_item.image %}
+                    <img src="{{ news_item.image.url }}" class="card-img-top news-img" alt="{{ news_item.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ news_item.title }}</h5>
+                        <p class="card-text">{{ news_item.content|truncatewords:30 }}</p>
+                        <p class="card-text"><small class="text-muted">By {{ news_item.author }} on {{ news_item.published_date }}</small></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock news %}
