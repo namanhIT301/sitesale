@@ -1,0 +1,91 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block main-content %}
+<section class="contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="contact-info">
+                    <h2>Contact</h2>
+                    <p>Thank you for visiting us. Feel free to contact us anytime.</p>
+                    <div class="info-box">
+                        <div class="icon">
+                            <i class="fa fa-map-marker"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Address:</h4>
+                            <p>ABC Corp, Vietnam</p>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="icon">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Email:</h4>
+                            <p>admin@gmail.com</a></p>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Phone:</h4>
+                            <p>+8412345678</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-form">
+                    <h2>Send a message/suggestion</h2>
+                    <form method="post" action="{% url 'contact_submit' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Full Name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="5" placeholder="Message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="team-section">
+    <div class="container">
+        <h2>Our Team</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="{% static 'app/images/member1.jpg' %}" alt="Team Member">
+                    <h4>Mr. Cat</h4>
+                    <p>Position: CEO</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="{% static 'app/images/member2.jpg' %}" alt="Team Member">
+                    <h4>Melbel</h4>
+                    <p>Position: Marketing Director</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="{% static 'app/images/member3.jpg' %}" alt="Team Member">
+                    <h4>Mr. Nguyen Nam Anh</h4>
+                    <p>Position: Managing director of a limited liability company</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main-content %}

@@ -1,0 +1,31 @@
+.news-img {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    /* Giới hạn chiều cao tối đa của ảnh */
+    object-fit: cover;
+    /* Đảm bảo ảnh giữ tỉ lệ */
+}
+
+.hot-gif {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 80px;
+    height: auto;
+    animation: blink-animation 2s infinite;
+}
+
+@keyframes blink-animation {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
