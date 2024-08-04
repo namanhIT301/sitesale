@@ -2,8 +2,18 @@ from django.contrib import admin
 from .models import *
 from django.utils.html import format_html
 from django.db.models import Q
+from django.contrib.auth.models import User
+from .models import UserToken
 
 # Register your models here.
+
+admin.site.unregister(User)
+
+
+class UserTokenAdmin(admin.ModelAdmin):
+    list_display = ('user', 'access_token', 'refresh_token')
+
+admin.site.register(UserToken, UserTokenAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'date_order', 'get_ordered_products', 'get_cart_total')
@@ -61,4 +71,4 @@ admin.site.register(OrderItem)
 admin.site.register(ShippingAddress,ShippingAddressAdmin)
 admin.site.register(ContactMessage,ContactMessageAdmin)
 admin.site.register(News,NewsAdmin)
-
+admin.site.register(User)

@@ -95,7 +95,7 @@
           <div class="form-inline my-2 my-lg-0" style= "visibility: {{user_login}}">
             <span> Hello! {{request.user}} </span>
             
-            <span><a href= "{% url 'logout' %}">Log out </a></span>
+            <span><a href= "{% url 'logout_user' %}">Log out </a></span>
           </div>
           
           <div class="form-inline my-2 my-lg-0 d-flex" style="visibility: {{user_not_login}};">

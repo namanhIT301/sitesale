@@ -20,7 +20,10 @@ static\images\news_images chứa các bài báo trong CSDL mẫu
 // Giao diện Admin django
 ở Product, Order, ContactMessages sẽ có filter và search để dễ điều chỉnh
 Bấm vào chữ đen ở các giá trị cột đầu tiên các class để chỉnh sửa, cập nhật giá trị
-
+--UPDATE 1----- : /API/
+ Đã thêm API Simple JWT 
+* Lưu ý: Login và Logout bạn hãy sử dụng POST , còn lại thì sử dụng PUT hoặc DELETE, GET
+Đọc api.txt để xem ví dụ hướng dẫn sử dụng  
 #English 
 1. Admin password: Use "1234".
 2. Use images of consistent sizes: Use uniform image dimensions (e.g., 200x200px, 400x400px) for products to avoid CSS and JS issues on the homepage.
@@ -43,3 +46,8 @@ Each time you add a new article, it will immediately appear at the top in the La
 //Django Admin Interface:
 In the Product, Order, and ContactMessages sections, there will be filters and search functionalities for easy adjustments.
 Click on the black text in the first column values of the classes to edit and update values.
+
+# --UPDATE 1----- : /API/ 
+Added Simple JWT API
+* Note: For Login and Logout, please use POST, while for other operations, use PUT, DELETE, or GET
+* Read api.txt for usage instructions

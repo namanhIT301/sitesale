@@ -1,16 +1,118 @@
-from django.shortcuts import render, redirect, render, get_object_or_404
-from django.http import HttpResponse,JsonResponse
+#normal_django
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from .models import *
-import json
-from django.contrib.auth.forms import UserCreationForm
+import json, requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import ContactMessage
+from .models import ContactMessage, UserToken
 from django.db.models import Q
-from django.views.generic import DetailView
+from django.conf import settings
 
-# Create your views here.
+#API_for_rest
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status, generics
+from rest_framework.views import APIView
+from .serializers import UserSerializer, LoginSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate, login as auth_login
+import logging
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .serializers import *
 
+logger = logging.getLogger(__name__)
+
+#api_view
+
+class NewsListCreateAPIView(generics.ListCreateAPIView):
+    queryset = News.objects.all().order_by('-published_date')
+    serializer_class = NewsSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+class NewsDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+class CartAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        customer = self.request.user
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        return order
+
+class OrderItemAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+class ContactCreateAPIView(generics.CreateAPIView):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = authenticate(
+                username=serializer.validated_data['username'],
+                password=serializer.validated_data['password']
+            )
+            if user is not None:
+                refresh = RefreshToken.for_user(user)
+                UserToken.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'refresh_token': str(refresh),
+                        'access_token': str(refresh.access_token)
+                    }
+                )
+                return Response({
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh)
+                }, status=status.HTTP_200_OK)
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                UserToken.objects.filter(refresh_token=refresh_token).delete()
+                return Response({"detail": "Successfully logged out."}, status=200)
+            return Response({"detail": "'refresh' parameter is missing"}, status=400)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=400)
+
+def create_user_token(user_id):
+    user = get_object_or_404(User, id=user_id)
+    user_token, created = UserToken.objects.get_or_create(user=user)
+    return user_token
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomRefreshTokenSerializer
+    
+#normal
 def detail(request):
     if request.user.is_authenticated:
         customer = request.user
@@ -111,29 +213,16 @@ def loginPage(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username = username, password = password)
-        if user is not None:
-            login(request,user)
-            return redirect('home')
-        else: messages.info(request,'user or password not correct!')
 
-    if request.user.is_authenticated:
-        user_not_login = "hidden"
-        user_login = "show"
-        customer = request.user
-        items = order.orderitem_set.all()
-        order, created = Order.objects.get_or_create(customer= customer, complete=False)
-        cartItems = order.get_cart_items
-        return redirect('home')
-    else:
-        user_not_login = "show"
-        user_login = "hidden"
-        items = []
-        order = {'get_cart_items': 0, 'get_cart_total': 0}
-        cartItems = order['get_cart_items']
-    categories = Category.objects.filter(is_sub = False)
-    context = {'order':order,'items':items, 'cartItems': cartItems,'categories': categories,'user_not_login': user_not_login, 'user_login': user_login}
-    return render(request,'app/login.html',context)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('home')
+
+    categories = Category.objects.filter(is_sub=False)
+    context = {'categories': categories, 'user_not_login': "show", 'user_login': "hidden"}
+    return render(request, 'app/login.html', context)
+        
 
 def logoutPage(request):
     logout(request)
@@ -170,7 +259,15 @@ def home(request):
     if price_max:
         products = products.filter(price__lte=price_max)
     
-
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        response_data = {
+            'hot_products': list(hot_products.values()),
+            'items': list(items.values()),
+            'categories': list(categories.values()),
+            'products': list(products.values()),
+            'cartItems': cartItems,
+        }
+        return JsonResponse(response_data)
     context={'hot_products':hot_products, 'items':items, 'categories':categories,'products': products,'cartItems':cartItems, 'user_not_login': user_not_login, 'user_login':user_login}
     return render(request,'app/home.html',context)
     
@@ -356,9 +453,5 @@ def news_detail(request, pk):
     context = {'news_list': news_list,'latest_posts':latest_posts,'categories':categories,'products': products,'items': items,'order': order,'cartItems': cartItems, 'user_not_login': user_not_login, 'user_login': user_login, 'news_item': news_item}
     return render(request, 'app/news_detail.html', context)
 
-class NewsDetailView(DetailView):
-    model = News
-    template_name = 'app/news_detail.html'
-    context_object_name = 'news_item'
 
     

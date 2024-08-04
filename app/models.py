@@ -1,11 +1,21 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib import admin
-from django.utils import timezone
+from django.contrib.auth.models import User
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
+
+class UserToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    access_token = models.CharField(max_length=255)
+    refresh_token = models.CharField(max_length=255)
+
+class CreateUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
 class Category(models.Model):
     sub_category = models.ForeignKey('self', on_delete=models.CASCADE, related_name='sub_categories', null=True, blank=True)
     is_sub = models.BooleanField(default=False)
@@ -15,10 +25,6 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class CreateUserForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2' ]
 
 class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='products')
