@@ -1,0 +1,17 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block main-content %}
+<section class="thank-you-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 text-center">
+                <h2>Thank you for your feedback and suggestions!</h2>
+                <img src= "{% static 'app/images/thankyou1.png' %}" >
+                <p>Your message has been sent and has been saved.</p>
+                <a href="{% url 'contact' %}" class="btn btn-primary">Done</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main-content %}

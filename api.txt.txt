@@ -1,0 +1,44 @@
+/API USE
+
+USE POSTMAN OR THUNDER CLIENT ( EXTENSION IN VSCODE)
+
+- TokenObtain (POST):
++ http://127.0.0.1:8000/api/token/ 
++ Headers:
+Add content-type: application/json
+
++ Body -> JSON Content: 
+{
+  "username": "..",
+  "password": ".."
+}
+(your account, if test i suggest admin and pass 1234)
+
+
+- Refresh token (POST):  
++ http://127.0.0.1:8000/api/token/refresh/
++ Body: 
+{
+    "refresh": "<refresh_token>"
+}
+(take this refresh_token from your login api response)
+
+- Cart(PUT):  
++ http://localhost:8000/api/cart/
++ Headers:
+Authorization: Bearer <access token>
+
+- News (GET)
++ http://localhost:8000/api/news/
++ Headers:
+Authorization: Bearer <access token>
+
+- ContactCreateMessage(POST):
++ http://localhost:8000/api/contact/
++ Body: 
+{
+  "name": "..",
+  "email": "..",
+  "message": ".."
+} 
+(Type .. whatever you want)

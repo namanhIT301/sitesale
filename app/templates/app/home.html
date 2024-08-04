@@ -1,0 +1,90 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block banner_slider %}
+<div id="carouselExampleDark" class="carousel carousel-dark slide " data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="1600">
+            <img src="{% static 'app/images/banner/banner1.jpg' %}" class="d-block w-100" alt="" height='480'>
+        </div>
+        <div class="carousel-item" data-bs-interval="1600">
+            <img src="{% static 'app/images/banner/banner2.jpg' %}" class="d-block w-100" alt="..." height='480'>
+        </div>
+        <div class="carousel-item" data-bs-interval="1600">
+            <img src="{% static 'app/images/banner/banner3.jpg' %}" class="d-block w-100" alt="..." height='480'>
+        </div>
+        <div class="carousel-item" data-bs-interval="1600">
+            <img src="{% static 'app/images/banner/banner4.jpg' %}" class="d-block w-100" alt="..." height='480'>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{% endblock banner_slider %}
+
+{% block main-content %}
+<div class="filter-section">
+    <form method="GET" action="{% url 'home' %}" class="form-inline">
+        <!-- Category -->
+        <div class="form-group mb-2">
+            <label for="category" class="sr-only">Category:</label>
+            <select name="category" id="category" class="form-control form-control-sm">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Filter Price -->
+        <div class="form-group mb-2">
+            <label for="price-min" class="sr-only">Price Min:</label>
+            <input type="number" name="price_min" id="price-min" class="form-control form-control-sm" placeholder="Min Price" value="{{ request.GET.price_min }}">
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="price-max" class="sr-only">Price Max:</label>
+            <input type="number" name="price_max" id="price-max" class="form-control form-control-sm" placeholder="Max Price" value="{{ request.GET.price_max }}">
+        </div>
+
+        <!-- Apply Filters and Clear Filters -->
+        <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary btn-sm">Clear Filters</a>
+    </form>
+</div>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card h-100">
+            <img src="{{ product.ImageURL }}" class="card-img-top product-img" alt="{{ product.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text text-center">${{ product.price | floatformat:2 }}</p>
+                <div class="mt-auto text-center">
+                    <a href="{% url 'detail' %}?id={{ product.id }}" class="btn btn-primary">View</a>
+                    <button data-product={{ product.id }} data-action="add" class="btn btn-secondary add-btn update-cart">Add to cart</button>
+                    {% if product.is_hot %}
+                    <img src="{% static 'app/images/hotstuff.gif' %}" alt="Hot" class="hot-gif">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock main-content %}
